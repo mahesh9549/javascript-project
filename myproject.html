@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td>
+                    <form onsubmit="event.preventDefault();onFormSubmit();"
+                        autocomplete="off">
+                        <div>
+                            <label>Full Name*</label><label
+                                class="validation-error hide"
+                                id="fullNameValidationError"></label>
+                            <input type="text" name="fullName" id="fullName"
+                                placeholder="--*write the full name*--"
+                                required>
+                        </div>
+                        <div>
+                            <label>EMP Code:-</label>
+                            <input type="text" name="empCode" id="empCode"
+                                placeholder="write the emp code" required>
+                        </div>
+                        <div>
+                            <label>Salary:-</label>
+                            <input type="number" name="salary" id="salary"
+                                placeholder="write the salary in number"
+                                reauired>
+                        </div>
+                        <div>
+                            <label>City:-</label>
+                            <input pattern="^[a-zA-Z]+" type="text" name="text" id="city" 
+                             placeholder="please write only in alphabet" required>
+                        </div>
+                        <div>
+                            <label>Department:-</label>
+                            <select name="department" id="depart" value="select
+                                department">
+
+                                <option value="maechinal">Mechnical</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="Electronics">Electronics</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for>Courses:-</label>
+                            <label>abc<input type="checkbox" name="mycheck"
+                                    class="check2"
+                                    value="abc" id="check1"></label>
+                            <label>xyz<input type="checkbox" name="mycheck"
+                                    class="check2"
+                                    value="xyz" id="check2"></label>
+
+
+
+
+
+                        </div>
+
+
+
+                        <div class="form-action-buttons">
+                            <input type="submit" value="Submit">
+                        </div>
+                    </form>
+                    <tfoot>
+                    </td>
+                    <td>
+                        <table class="list" id="employeeList">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>EMP Code</th>
+                                    <th>Salary</th>
+                                    <th>City</th>
+                                    <th>Department</th>
+                                    <th>course</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </tfoot>
+    </body>
+    <script>
+    var selectedRow = null
+
+function onFormSubmit() {
+    if (validate()) {
+        var formData = readFormData();
+        if (selectedRow == null)
+            insertNewRecord(formData);
+        else
+            updateRecord(formData);
+        resetForm();
+    }
+}
+
+function readFormData() {
+    var formData = {};
+    formData["fullName"] = document.getElementById("fullName").value;
+    formData["empCode"] = document.getElementById("empCode").value;
+    formData["salary"] = document.getElementById("salary").value;
+    formData["city"] = document.getElementById("city").value;
+    formData["depart"] = document.getElementById("depart").value;
+    const check1Val = document.getElementById("check1").checked;
+    const check2Val = document.getElementById("check2").checked;
+    console.log(check1Val,check2Val)
+    let str = "";
+    if(check1Val) {
+        str += document.getElementById("check1").value;
+    }
+    if(check2Val) {
+        if(str !== "") {
+            str += ","
+        }
+        str += document.getElementById("check2").value;
+    }
+    formData["courses"] = str;
+    var inputs = document.querySelectorAll('.check2'); 
+        for (var i = 0; i < inputs.length; i++) { 
+            inputs[i].checked = false; 
+        } 
+    return formData;
+}
+
+function insertNewRecord(data) {
+    var table = document.getElementById("employeeList").getElementsByTagName('tbody')[0];
+    var newRow = table.insertRow(table.length);
+    cell1 = newRow.insertCell(0);
+    cell1.innerHTML = data.fullName;
+    cell2 = newRow.insertCell(1);
+    cell2.innerHTML = data.empCode;
+    cell3 = newRow.insertCell(2);
+    cell3.innerHTML = data.salary;
+    cell4 = newRow.insertCell(3);
+    cell4.innerHTML = data.city;
+    cell5 = newRow.insertCell(4);
+    cell5.innerHTML = data.depart;
+    cell6 = newRow.insertCell(5);
+    cell6.innerHTML = data.courses;
+    cell6 = newRow.insertCell(6);
+    cell6.innerHTML = `<button onClick="onEdit(this)">Edit</button>
+                       <button onClick="onDelete(this)">Delete</button>`;
+}
+
+function resetForm() {
+    document.getElementById("fullName").value = "";
+    document.getElementById("empCode").value = "";
+    document.getElementById("salary").value = "";
+    document.getElementById("city").value = "";
+    document.getElementById("depart").value = "";
+    //document.getElementById("courses").value = "";
+    selectedRow = null;
+}
+
+function onEdit(td) {
+    selectedRow = td.parentElement.parentElement;
+    console.log(selectedRow);
+    document.getElementById("fullName").value = selectedRow.cells[0].innerHTML;
+    document.getElementById("empCode").value = selectedRow.cells[1].innerHTML;
+    document.getElementById("salary").value = selectedRow.cells[2].innerHTML;
+    document.getElementById("city").value = selectedRow.cells[3].innerHTML;
+    document.getElementById("depart").value = selectedRow.cells[4].innerHTML;
+    let checkedValArr = selectedRow.cells[5].innerHTML;
+    checkedValArr = checkedValArr.split(",");
+    console.log(checkedValArr);
+    let check1Val = document.getElementById("check1");
+    let check2Val = document.getElementById("check2");
+    if(checkedValArr.includes(check1Val.value)) {
+        check1Val.checked = true;
+    }
+    if(checkedValArr.includes(check2Val.value)) {
+        check2Val.checked = true;
+    }
+}
+function updateRecord(formData) {
+    selectedRow.cells[0].innerHTML = formData.fullName;
+    selectedRow.cells[1].innerHTML = formData.empCode;
+    selectedRow.cells[2].innerHTML = formData.salary;
+    selectedRow.cells[3].innerHTML = formData.city;
+    selectedRow.cells[4].innerHTML = formData.depart;
+    selectedRow.cells[5].innerHTML = formData.courses;
+    
+}
+
+function onDelete(td) {
+    if (confirm('Are you sure to delete this record ?')) {
+        row = td.parentElement.parentElement;
+        document.getElementById("employeeList").deleteRow(row.rowIndex);
+        resetForm();
+    }
+}
+function validate() {
+    isValid = true;
+    if (document.getElementById("fullName").value == "") {
+        isValid = false;
+        document.getElementById("fullNameValidationError").classList.remove("hide");
+    } else {
+        isValid = true;
+        if (!document.getElementById("fullNameValidationError").classList.contains("hide"))
+            document.getElementById("fullNameValidationError").classList.add("hide");
+    }
+    return isValid;
+} 
+ </script>
+</html>
